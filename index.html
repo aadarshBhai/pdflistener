@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Listener</title>
+    <link rel="icon" href="favi.png" type="image/png">
+
+
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            color: black;
+            overflow: hidden;
+            background-image: url('back.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav li {
+            margin-left: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .login-container {
+            margin-right: 50px;
+        }
+
+        .login-button, .signup-button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .signup-button {
+            background-color: #28a745;
+            margin-left: 10px;
+        }
+
+        nav {
+            margin-left: auto;
+            margin-right: 200px;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                margin: 10px 0;
+                margin-right: auto;
+                margin-left: auto;
+            }
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            .login-container {
+                margin-right: 20px;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 101;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 15px;
+            border: 1px solid #888;
+            border-radius: 15px;
+            width: 60%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            max-height: 80vh;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 25px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        form label {
+            color: black;
+        }
+
+        form input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: calc(100% - 20px);
+        }
+
+        form button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            color: black;
+        }
+
+        #message {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            z-index: 99;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="PDF_Listener_Logo.png" alt="Logo">
+            <div class="logo-text">PDF Listener</div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About us</a></li>
+                <li><a href="contact.html">Contact us</a></li>
+            </ul>
+        </nav>
+        <div class="login-container">
+            <button class="login-button">LOG IN</button>
+            <button class="signup-button">SIGN UP</button>
+        </div>
+    </header>
+
+    <div id="message">"Every story deserves to be heard—upload 
+        your PDFs and let our voice bring them closer to your heart."</div>
+
+    <!-- Login Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <button class="close">&times;</button>
+            <div class="modal-header">
+                <img src="logo.jpg" alt="User">
+                <h2>Welcome Back</h2>
+            </div>
+            <form class="login-form" id="loginForm" action="/login" method="POST">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <a href="javascript:void(0)" onclick="toggleForm('forgot-password')">Forgot password?</a>
+                <button type="submit">Log In</button>
+                <p>Don't have an account? <a href="javascript:void(0)" onclick="toggleForm('signup')">Signup here</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <button class="close">&times;</button>
+            <div class="modal-header">
+                <img src="logo.jpg" alt="User">
+                <h2>Join Us</h2>
+            </div>
+            <form class="signup-form" id="signupForm" action="/signup" method="POST">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" name="fullName" required>
+
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" name="email" required>
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" name="password" required>
+                <button type="submit">Sign Up</button>
+                <p>Already have an account? <a href="javascript:void(0)" onclick="toggleForm('login')">Login here</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <button class="close">&times;</button>
+            <div class="modal-header">
+                <h2>Reset Password</h2>
+            </div>
+            <form id="forgotPasswordForm">
+                <label for="forgot-email">Email</label>
+                <input type="email" id="forgot-email" name="email" required>
+                <button type="submit">Reset Password</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var modal = document.getElementById("myModal");
+        var signupModal = document.getElementById("signupModal");
+        var forgotPasswordModal = document.getElementById("forgotPasswordModal");
+        var closeButtons = document.querySelectorAll(".close");
+        var message = document.getElementById("message");
+    
+        document.querySelector(".login-button").onclick = function () {
+            modal.style.display = "block";
+            message.style.display = "none";
+        }
+    
+        document.querySelector(".signup-button").onclick = function () {
+            signupModal.style.display = "block";
+            message.style.display = "none";
+        }
+    
+        closeButtons.forEach(button => {
+            button.onclick = function () {
+                modal.style.display = "none";
+                signupModal.style.display = "none";
+                forgotPasswordModal.style.display = "none";
+                message.style.display = "block";
+            }
+        });
+    
+        window.onclick = function (event) {
+            if (event.target == modal || event.target == signupModal || event.target == forgotPasswordModal) {
+                modal.style.display = "none";
+                signupModal.style.display = "none";
+                forgotPasswordModal.style.display = "none";
+                message.style.display = "block";
+            }
+        }
+    
+        function toggleForm(formType) {
+            if (formType === 'signup') {
+                modal.style.display = "none";
+                signupModal.style.display = "block";
+            } else if (formType === 'login') {
+                signupModal.style.display = "none";
+                modal.style.display = "block";
+            } else if (formType === 'forgot-password') {
+                modal.style.display = "none";
+                forgotPasswordModal.style.display = "block";
+            }
+        }
+    
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert("Login successful");
+                    window.location.href = "home.html"; // Redirect to home.html
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                console.error("Error logging in:", err);
+                alert("An error occurred");
+            }
+        });
+
+        document.getElementById("signupForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+            
+            const fullName = document.getElementById("fullname").value;
+            const email = document.getElementById("signup-email").value;
+            const password = document.getElementById("signup-password").value;
+             // Client-side password length check
+    if (password.length < 6) {
+        alert("Password must be at least 6 characters long.");
+        return;
+    }
+            
+
+            console.log("Submitting Signup:", { fullName, email, password });
+
+            // Send data to the server (using fetch)
+            fetch('/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ fullName, email, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect) {
+                    window.location.href = data.redirect; // Redirect to home.html
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById("forgotPasswordForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // Prevent form submission
+            var email = document.getElementById("forgot-email").value;
+
+            try {
+                const response = await fetch("/reset-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email }), // Send the email to the server
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message); // Notify user of success
+                } else {
+                    alert(data.message || "Error sending reset token.");
+                }
+            } catch (error) {
+                console.error("Error sending reset token:", error);
+                alert("An error occurred while sending the reset token.");
+            }
+        });
+    </script>
+    
+</body>
+</html>

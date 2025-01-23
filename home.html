@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> PDF Reader with Voice Selector 🎙️</title>
+    <link rel="icon" href="favi.png" type="image/png">
+   <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button id="logoutButton" onclick="logout()">Logout</button>
+    <h1>📖 LOVE WHAT YOU READ ❤️</h1>
+    <input type="file" id="pdfUpload" accept="application/pdf">
+    <div id="controls" style="display:none;">
+        <button id="prevPage"><span class="icon">⬅️</span>Previous Page</button>
+        <button id="nextPage"><span class="icon">➡️</span>Next Page</button>
+        <button id="zoomIn"><span class="icon">🔍</span>Zoom In</button>
+        <button id="zoomOut"><span class="icon">🔍</span>Zoom Out</button>
+        <label for="speed">⚡ Speed: </label>
+        <select id="speed">
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2">2x</option>
+        </select>
+        <label for="voiceSelector">🗣️ Voice: </label>
+        <select id="voiceSelector"></select>
+        <button id="read"><span class="icon">🎧</span>Read Page</button>
+        <button id="pause"><span class="icon">⏸️</span>Pause</button>
+        <button id="resume"><span class="icon">▶️</span>Resume</button>
+    </div>
+    <div id="viewer" style="display:none;">
+        <div id="scrollContainer">
+            <canvas id="pdfCanvas"></canvas>
+        </div>
+        <div id="pageNumber"><span class="icon">📄</span>Page 1 of 0</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <script>
+        // Function to log out and redirect to index.html
+        function logout() {
+            window.location.href = "index.html"; // Redirects to index.html
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
